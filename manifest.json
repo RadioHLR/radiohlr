@@ -1,0 +1,21 @@
+{
+  "name": "Radio HLR",
+  "short_name": "Radio HLR",
+  "description": "Your Community Radio Station",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1a202c",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "https://thumbnailer.mixcloud.com/unsafe/136x136/profile/a/9/e/4/9f1c-7204-4beb-bfb9-8e87d68517f6",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://thumbnailer.mixcloud.com/unsafe/136x136/profile/a/9/e/4/9f1c-7204-4beb-bfb9-8e87d68517f6",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
