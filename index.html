@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/radio-hlr-pwa/manifest.json"> 
     
     <style>
         body {
@@ -319,14 +319,14 @@
                     <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
                     <p class="text-gray-300">08:00 – 09:00 – HLR Music Mix</p>
                     <p class="text-gray-300">09:00 – 10:00 – Gail's Feelgood Hour</p>
-                    <p class="text-300">10:00 – 11:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">10:00 – 11:00 – HLR Music Mix</p>
                     <p class="text-gray-300">11:00 – 12:00 – Worship From The Rectory</p>
                     <p class="text-gray-300">12:00 – 15:00 – Sounds From The Sunny Side</p>
                     <p class="text-gray-300">15:00 – 16:00 – 84 years of Jazz, Blues & Rock'n'Roll</p>
                     <p class="text-gray-300">16:00 – 17:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
                     <p class="text-gray-300">17:00 – 18:00 – The Modern World</p>
                     <p class="text-gray-300">18:00 – 19:00 – Jo Jo's Soul Therapy</p>
-                    <p class="text-300">19:00 – 19:30 – HLR Music Mix</p>
+                    <p class="text-gray-300">19:00 – 19:30 – HLR Music Mix</p>
                     <p class="text-gray-300">19:30 – 21:30 – LIVE: - Martin and Di's All Request Show</p>
                     <p class="text-gray-300">21:30 – 22:00 – HLR Music Mix</p>
                     <p class="text-gray-300">22:00 – 23:00 – Mark's Disco Hour</p>
@@ -350,7 +350,6 @@
         const scheduleModalOverlay = document.getElementById('scheduleModalOverlay');
         const closeScheduleButton = document.getElementById('closeScheduleButton');
         
-        // New: Get references to the volume icons
         const volumeDownIcon = document.getElementById('volumeDownIcon');
         const volumeUpIcon = document.getElementById('volumeUpIcon');
 
@@ -397,22 +396,18 @@
             radioStream.volume = volumeSlider.value;
         });
 
-        // New: Volume control from icons
+        // Volume control from icons
         volumeDownIcon.addEventListener('click', () => {
             let currentVolume = radioStream.volume;
-            // Decrease by 0.01 and clamp between 0 and 1
             currentVolume = Math.max(0, currentVolume - 0.01); 
             radioStream.volume = currentVolume;
-            // Update slider position (direct mapping as slider max is 1)
             volumeSlider.value = currentVolume;
         });
 
         volumeUpIcon.addEventListener('click', () => {
             let currentVolume = radioStream.volume;
-            // Increase by 0.01 and clamp between 0 and 1
             currentVolume = Math.min(1, currentVolume + 0.01);
             radioStream.volume = currentVolume;
-            // Update slider position (direct mapping as slider max is 1)
             volumeSlider.value = currentVolume;
         });
 
@@ -480,6 +475,21 @@
 
             document.getElementById('closeMessageBox').addEventListener('click', () => {
                 document.body.removeChild(messageBox);
+            });
+        }
+
+        // PWA: Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Adjust this path if your GitHub Pages URL is different (e.g., if you're deploying a custom domain)
+                // For a repository named 'radio-hlr-pwa', the path will be '/radio-hlr-pwa/service-worker.js'
+                navigator.serviceWorker.register('/radio-hlr-pwa/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
             });
         }
     </script>
