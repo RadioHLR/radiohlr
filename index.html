@@ -13,6 +13,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #1a202c; /* Dark background */
+            color: #ffffff; /* White text */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,7 +23,7 @@
         }
         /* Custom styling for volume slider track and thumb */
         input[type="range"]::-webkit-slider-runnable-track {
-            background: #4a5568;
+            background: #4a5568; /* Darker track */
             border-radius: 5px;
             height: 8px;
         }
@@ -38,7 +39,7 @@
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
         input[type="range"]::-moz-range-track {
-            background: #4a5568;
+            background: #4a5568; /* Darker track */
             border-radius: 5px;
             height: 8px;
         }
@@ -68,14 +69,14 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* About Us Modal Styling */
-        #aboutModalOverlay {
+        /* Modal Overlay Styling (for About Us and Schedule) */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+            background-color: rgba(0, 0, 0, 0.7); /* Dark overlay remains */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -85,13 +86,14 @@
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
 
-        #aboutModalOverlay.active {
+        .modal-overlay.active {
             opacity: 1;
             visibility: visible;
         }
 
         .modal-content {
-            background-color: #2d3748; /* Slightly lighter dark background for content box */
+            background-color: #2d3748; /* Darker background for modal content */
+            color: #ffffff; /* White text for modal content */
             border-radius: 0.75rem;
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
             max-width: 90%; /* Responsive width */
@@ -112,7 +114,7 @@
             top: 1rem;
             right: 1rem;
             background-color: #4a5568; /* Darker gray for close button */
-            color: white;
+            color: #ffffff; /* White text for close button */
             padding: 0.5rem 0.75rem;
             border-radius: 9999px; /* Full rounded */
             font-size: 1.25rem;
@@ -124,15 +126,15 @@
 
         .modal-close-button:hover {
             background-color: #667eea; /* Indigo hover */
+            color: white; /* White text on hover */
         }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
     <div class="flex flex-col items-center justify-center min-h-screen w-full p-4">
-        <div class="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700">
-
+        <div class="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700 text-white">
             <div class="flex flex-col items-center mb-6">
-                <img src="https://thumbnailer.mixcloud.com/unsafe/136x136/profile/a/9/e/4/9f1c-7204-4beb-bfb9-8e87d68517f6" alt="Radio HLR Logo" class="w-32 h-32 rounded-full mb-4 border-4 border-indigo-500 shadow-lg object-cover">
+                <img src="https://thumbnailer.mixcloud.com/unsafe/136x136/profile/a/9/e/4/9f1c-7204-4beb-bfb9-8e87d68517f6" alt="Radio HLR Logo" class="w-48 h-48 rounded-full mb-4 border-4 border-indigo-500 shadow-lg object-cover">
                 <h1 class="text-4xl font-extrabold text-indigo-400 mb-2">Radio HLR</h1>
                 <p class="text-gray-400 text-lg">Your Community Radio Station</p>
             </div>
@@ -150,19 +152,19 @@
             </div>
 
             <div class="flex items-center space-x-4 mb-6">
-                <i class="fas fa-volume-down text-gray-400 text-xl"></i>
+                <i id="volumeDownIcon" class="fas fa-volume-down text-gray-400 text-xl cursor-pointer hover:text-white transition-colors duration-200"></i>
                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                <i class="fas fa-volume-up text-gray-400 text-xl"></i>
+                <i id="volumeUpIcon" class="fas fa-volume-up text-gray-400 text-xl cursor-pointer hover:text-white transition-colors duration-200"></i>
             </div>
             
             <div class="flex flex-wrap justify-center items-center gap-4 mt-4">
                 <button id="aboutButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     About Us
                 </button>
-                <button id="liveLoungeButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
-                    Live Lounge
+                <button id="scheduleButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
+                    Schedule
                 </button>
-                </div>
+            </div>
 
         </div>
     </div>
@@ -191,6 +193,149 @@
         </div>
     </div>
 
+    <div id="scheduleModalOverlay" class="modal-overlay">
+        <div id="scheduleContent" class="modal-content text-left">
+            <button id="closeScheduleButton" class="modal-close-button">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-3xl font-extrabold text-blue-400 mb-4 text-center">Show Schedule</h2>
+            <p class="text-gray-300 text-sm italic text-center mb-4">
+            </p>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Monday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 09:00 – Gail's Feelgood Hour</p>
+                    <p class="text-gray-300">09:00 – 10:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">10:00 – 11:00 – Made In The 70's</p>
+                    <p class="text-gray-300">11:00 – 12:00 – Made In The 80's</p>
+                    <p class="text-gray-300">12:00 – 13:00 – Made In The 90's</p>
+                    <p class="text-gray-300">13:00 – 14:00 – The country hour</p>
+                    <p class="text-gray-300">14:00 – 15:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">15:00 – 16:00 – The Swinging Sixties</p>
+                    <p class="text-gray-300">16:00 – 18:00 – LIVE: The Calmute Home</p>
+                    <p class="text-gray-300">18:00 – 19:00 – Jo Jo's Soul Therapy</p>
+                    <p class="text-gray-300">19:00 – 20:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">20:00 – 22:00 – LIVE: The Sound Project with Mark Rodriguez</p>
+                    <p class="text-gray-300">22:00 – 23:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
+                    <p class="text-gray-300">23:00 – 00:00 – Late Night Easy Listening</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Tuesday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 09:00 – Jo Jo's Soul Therapy</p>
+                    <p class="text-gray-300">09:00 – 12:00 – Sounds From The Sunny Side</p>
+                    <p class="text-gray-300">12:00 – 13:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">13:00 – 14:00 – Gail's Feelgood Hour</p>
+                    <p class="text-gray-300">14:00 – 15:00 – The Country Hour</p>
+                    <p class="text-gray-300">15:00 – 16:00 – The Modern World</p>
+                    <p class="text-gray-300">16:00 – 17:00 – Mark's Disco Hour</p>
+                    <p class="text-gray-300">17:00 – 18:00 – Made In The 70's</p>
+                    <p class="text-gray-300">18:00 – 19:00 – Made In The 80's</p>
+                    <p class="text-gray-300">19:00 – 20:00 – The Rock Hour</p>
+                    <p class="text-gray-300">20:00 – 21:30 – LIVE: Sounds of the 60's with Martin Davies</p>
+                    <p class="text-gray-300">21:30 – 23:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">23:00 – 00:00 – Late Night Easy Listening</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Wednesday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 09:00 – Gail's Feelgood Hour</p>
+                    <p class="text-gray-300">09:00 – 10:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">10:00 – 11:00 – The Modern World</p>
+                    <p class="text-gray-300">11:00 – 13:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">13:00 – 14:00 – Mark's Disco Hour</p>
+                    <p class="text-gray-300">14:00 – 15:00 – Made In The 70's</p>
+                    <p class="text-gray-300">15:00 – 16:00 – Made In The 80's</p>
+                    <p class="text-gray-300">16:00 – 17:00 – Made In The 90's</p>
+                    <p class="text-gray-300">17:00 – 18:00 – The Country Hour</p>
+                    <p class="text-gray-300">18:00 – 19:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
+                    <p class="text-gray-300">19:00 – 20:00 – Jo Jo's Soul Therapy</p>
+                    <p class="text-gray-300">20:00 – 21:00 – The Rock Hour</p>
+                    <p class="text-gray-300">21:00 – 23:00 – Dave's Club, Dance & Trance Show</p>
+                    <p class="text-gray-300">23:00 – 00:00 – The Punk Hour</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Thursday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 09:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">09:00 – 10:00 – The Swinging Sixties</p>
+                    <p class="text-gray-300">10:00 – 11:00 – Mark's Disco Hour</p>
+                    <p class="text-gray-300">11:00 – 12:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">12:00 – 13:00 – Gail's Feelgood Hour</p>
+                    <p class="text-gray-300">13:00 – 14:00 – Jo Jo's Soul Therapy</p>
+                    <p class="text-gray-300">14:00 – 17:00 – Sounds From The Sunny Side</p>
+                    <p class="text-gray-300">17:00 – 18:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">18:00 – 19:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
+                    <p class="text-gray-300">19:00 – 20:00 – The Country Hour</p>
+                    <p class="text-gray-300">20:00 – 20:30 – HLR Music Mix</p>
+                    <p class="text-gray-300">20:30 – 22:00 – LIVE: The Massachusetts Experience</p>
+                    <p class="text-gray-300">22:00 – 23:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">23:00 – 00:00 – The Rock Hour</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Friday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 09:00 – Made In The 70's</p>
+                    <p class="text-gray-300">09:00 – 10:00 – Made In The 80's</p>
+                    <p class="text-gray-300">10:00 – 11:00 – Made In The 90's</p>
+                    <p class="text-gray-300">11:00 – 12:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">12:00 – 13:00 – Jo Jo's Soul Therapy</p>
+                    <p class="text-gray-300">13:00 – 14:00 – TThe Swinging Sixties</p>
+                    <p class="text-gray-300">14:00 – 15:00 – The Modern World</p>
+                    <p class="text-gray-300">15:00 – 16:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
+                    <p class="text-gray-300">16:00 – 17:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">17:00 – 18:00 – The Country Hour</p>
+                    <p class="text-gray-300">18:00 – 19:00 – Gail's Feelgood Hour </p>
+                    <p class="text-gray-300">19:00 – 20:00 – Mark's Disco Hour</p>
+                    <p class="text-gray-300">20:00 – 22:00 – LIVE: The M&D Show</p>
+                    <p class="text-gray-300">22:00 – 00:00 – Dave's Club, Dance & Trance Show</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Saturday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 10:00 – LIVE: The Saturday Morning Show with Rhian</p>
+                    <p class="text-gray-300">10:00 – 11:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">11:00 – 14:00 – Sounds From The Sunny Side</p>
+                    <p class="text-gray-300">14:00 – 15:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">15:00 – 16:00 – Made In The 70's</p>
+                    <p class="text-gray-300">16:00 – 17:00 – Made In The 80's</p>
+                    <p class="text-gray-300">17:00 – 18:00 – Made In The 90's</p>
+                    <p class="text-gray-300">18:00 – 19:00 – The Rock Hour</p>
+                    <p class="text-gray-300">19:00 – 20:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
+                    <p class="text-gray-300">20:00 – 21:00 – Mark's Disco Hour</p>
+                    <p class="text-gray-300">21:00 – 23:00 – Dave's Club, Dance & Trance Show</p>
+                    <p class="text-gray-300">23:00 – 00:00 – Late Night Easy Listening</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">Sunday</h3>
+                    <p class="text-gray-300">00:00 – 07:00 – HLR Through the Night</p>
+                    <p class="text-gray-300">07:00 – 08:00 – HLR Breakfast</p>
+                    <p class="text-gray-300">08:00 – 09:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">09:00 – 10:00 – Gail's Feelgood Hour</p>
+                    <p class="text-300">10:00 – 11:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">11:00 – 12:00 – Worship From The Rectory</p>
+                    <p class="text-gray-300">12:00 – 15:00 – Sounds From The Sunny Side</p>
+                    <p class="text-gray-300">15:00 – 16:00 – 84 years of Jazz, Blues & Rock'n'Roll</p>
+                    <p class="text-gray-300">16:00 – 17:00 – Di Peel's Northern Soul Hour - Keeping the Faith</p>
+                    <p class="text-gray-300">17:00 – 18:00 – The Modern World</p>
+                    <p class="text-gray-300">18:00 – 19:00 – Jo Jo's Soul Therapy</p>
+                    <p class="text-300">19:00 – 19:30 – HLR Music Mix</p>
+                    <p class="text-gray-300">19:30 – 21:30 – LIVE: - Martin and Di's All Request Show</p>
+                    <p class="text-gray-300">21:30 – 22:00 – HLR Music Mix</p>
+                    <p class="text-gray-300">22:00 – 23:00 – Mark's Disco Hour</p>
+                    <p class="text-gray-300">23:00 – 00:00 – The Punk Hour</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         const radioStream = document.getElementById('radioStream');
@@ -201,22 +346,17 @@
         const aboutButton = document.getElementById('aboutButton');
         const aboutModalOverlay = document.getElementById('aboutModalOverlay');
         const closeAboutButton = document.getElementById('closeAboutButton');
-        const liveLoungeButton = document.getElementById('liveLoungeButton');
-        // Removed installAppButton constant
+        const scheduleButton = document.getElementById('scheduleButton');
+        const scheduleModalOverlay = document.getElementById('scheduleModalOverlay');
+        const closeScheduleButton = document.getElementById('closeScheduleButton');
+        
+        // New: Get references to the volume icons
+        const volumeDownIcon = document.getElementById('volumeDownIcon');
+        const volumeUpIcon = document.getElementById('volumeUpIcon');
 
-        // Removed deferredPrompt variable
-        // let deferredPrompt; 
 
         // Set initial volume
         radioStream.volume = volumeSlider.value;
-
-        // --- Removed PWA Installation Logic ---
-        // if ('serviceWorker' in navigator) { ... }
-        // window.addEventListener('beforeinstallprompt', (e) => { ... });
-        // installAppButton.addEventListener('click', async () => { ... });
-        // window.addEventListener('appinstalled', () => { ... });
-        // --- End Removed PWA Installation Logic ---
-
 
         // Function to add/remove pulse animation
         function togglePulseAnimation(isPlaying) {
@@ -237,7 +377,7 @@
                     .catch(error => {
                         console.error("Error playing audio:", error);
                         console.error("Attempted stream URL:", radioStream.src);
-                        showMessageBox('Error', 'Error playing stream. Please check your internet connection.'); // Replaced alert
+                        showMessageBox('Error', 'Error playing stream. Please check your internet connection.');
                     });
             } else {
                 radioStream.pause(); // Pause the stream
@@ -252,9 +392,28 @@
             togglePulseAnimation(false); // Stop animation
         });
 
-        // Volume control
+        // Volume control from slider
         volumeSlider.addEventListener('input', () => {
             radioStream.volume = volumeSlider.value;
+        });
+
+        // New: Volume control from icons
+        volumeDownIcon.addEventListener('click', () => {
+            let currentVolume = radioStream.volume;
+            // Decrease by 0.01 and clamp between 0 and 1
+            currentVolume = Math.max(0, currentVolume - 0.01); 
+            radioStream.volume = currentVolume;
+            // Update slider position (direct mapping as slider max is 1)
+            volumeSlider.value = currentVolume;
+        });
+
+        volumeUpIcon.addEventListener('click', () => {
+            let currentVolume = radioStream.volume;
+            // Increase by 0.01 and clamp between 0 and 1
+            currentVolume = Math.min(1, currentVolume + 0.01);
+            radioStream.volume = currentVolume;
+            // Update slider position (direct mapping as slider max is 1)
+            volumeSlider.value = currentVolume;
         });
 
         // About Us Button functionality (to show modal)
@@ -267,9 +426,14 @@
             aboutModalOverlay.classList.remove('active'); // Hide modal
         });
 
-        // Live Lounge Button functionality
-        liveLoungeButton.addEventListener('click', () => {
-            window.open('https://radiohlr.com/live-lounge/', '_blank'); // Open in new tab
+        // Schedule Button functionality (to show modal)
+        scheduleButton.addEventListener('click', () => {
+            scheduleModalOverlay.classList.add('active'); // Show schedule modal
+        });
+
+        // Close Schedule Button functionality (to hide modal)
+        closeScheduleButton.addEventListener('click', () => {
+            scheduleModalOverlay.classList.remove('active'); // Hide schedule modal
         });
 
         // Update animation based on audio events
@@ -288,7 +452,7 @@
         radioStream.addEventListener('ended', () => {
             togglePulseAnimation(false); // Stop animation
             setTimeout(() => {
-                radioStream.load();
+                radioStream.load(); // Reload the stream
                 radioStream.play();
             }, 2000);
         });
@@ -296,11 +460,7 @@
         radioStream.addEventListener('error', (e) => {
             console.error("Audio Error:", e);
             console.error("Attempted stream URL:", radioStream.src);
-            showMessageBox('Error', 'There was an error loading the radio stream. This might be due to network issues.'); // Replaced alert
-        });
-
-        radioStream.addEventListener('loadedmetadata', () => {
-            // No status text to update
+            showMessageBox('Error', 'There was an error loading the radio stream. This might be due to network issues.');
         });
 
         // Custom Message Box
