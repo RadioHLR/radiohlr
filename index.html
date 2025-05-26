@@ -162,7 +162,7 @@
                 <button id="liveLoungeButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Live Lounge
                 </button>
-                <button id="installAppButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200 hidden">
+                <button id="installAppButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     <i class="fas fa-download mr-2"></i>Download App
                 </button>
             </div>
@@ -231,7 +231,8 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installAppButton.classList.remove('hidden');
+            // The button is now visible by default, so no need to remove 'hidden' here.
+            // installAppButton.classList.remove('hidden'); 
             console.log('beforeinstallprompt fired!');
         });
 
@@ -242,14 +243,14 @@
                 const { outcome } = await deferredPrompt.userChoice;
                 console.log(`User response to the A2HS prompt: ${outcome}`);
                 deferredPrompt = null;
-                installAppButton.classList.add('hidden');
+                installAppButton.classList.add('hidden'); // Hide button after prompt
             }
         });
 
         // Listen for the app installed event (e.g., when user accepts A2HS)
         window.addEventListener('appinstalled', () => {
             console.log('PWA was installed!');
-            installAppButton.classList.add('hidden');
+            installAppButton.classList.add('hidden'); // Hide button if app is already installed
         });
         // --- End PWA Installation Logic ---
 
