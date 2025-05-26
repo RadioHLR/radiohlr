@@ -162,10 +162,7 @@
                 <button id="liveLoungeButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Live Lounge
                 </button>
-                <button id="installAppButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
-                    <i class="fas fa-download mr-2"></i>Download App
-                </button>
-            </div>
+                </div>
 
         </div>
     </div>
@@ -205,54 +202,20 @@
         const aboutModalOverlay = document.getElementById('aboutModalOverlay');
         const closeAboutButton = document.getElementById('closeAboutButton');
         const liveLoungeButton = document.getElementById('liveLoungeButton');
-        const installAppButton = document.getElementById('installAppButton'); // New: Install App Button
+        // Removed installAppButton constant
 
-        let deferredPrompt; // To store the beforeinstallprompt event
+        // Removed deferredPrompt variable
+        // let deferredPrompt; 
 
         // Set initial volume
         radioStream.volume = volumeSlider.value;
 
-        // --- PWA Installation Logic ---
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Changed service worker path to be relative './'
-                navigator.serviceWorker.register('./service-worker.js') 
-                    .then(registration => {
-                        console.log('Service Worker registered:', registration);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            });
-        }
-
-        // Listen for the beforeinstallprompt event
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // The button is now visible by default, so no need to remove 'hidden' here.
-            // installAppButton.classList.remove('hidden'); 
-            console.log('beforeinstallprompt fired!');
-        });
-
-        // Handle the install button click
-        installAppButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the A2HS prompt: ${outcome}`);
-                deferredPrompt = null;
-                installAppButton.classList.add('hidden'); // Hide button after prompt
-            }
-        });
-
-        // Listen for the app installed event (e.g., when user accepts A2HS)
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA was installed!');
-            installAppButton.classList.add('hidden'); // Hide button if app is already installed
-        });
-        // --- End PWA Installation Logic ---
+        // --- Removed PWA Installation Logic ---
+        // if ('serviceWorker' in navigator) { ... }
+        // window.addEventListener('beforeinstallprompt', (e) => { ... });
+        // installAppButton.addEventListener('click', async () => { ... });
+        // window.addEventListener('appinstalled', () => { ... });
+        // --- End Removed PWA Installation Logic ---
 
 
         // Function to add/remove pulse animation
@@ -340,7 +303,7 @@
             // No status text to update
         });
 
-        // Custom Message Box (re-added)
+        // Custom Message Box
         function showMessageBox(title, message) {
             const messageBox = document.createElement('div');
             messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
