@@ -90,7 +90,7 @@
             visibility: visible;
         }
 
-        #aboutContent {
+        .modal-content {
             background-color: #2d3748; /* Slightly lighter dark background for content box */
             border-radius: 0.75rem;
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
@@ -103,11 +103,11 @@
             transition: transform 0.3s ease-in-out;
         }
 
-        #aboutModalOverlay.active #aboutContent {
+        .modal-overlay.active .modal-content {
             transform: scale(1); /* Scale to normal size */
         }
 
-        #closeAboutButton {
+        .modal-close-button {
             position: absolute;
             top: 1rem;
             right: 1rem;
@@ -122,7 +122,7 @@
             transition: background-color 0.2s ease-in-out;
         }
 
-        #closeAboutButton:hover {
+        .modal-close-button:hover {
             background-color: #667eea; /* Indigo hover */
         }
     </style>
@@ -155,21 +155,24 @@
                 <i class="fas fa-volume-up text-gray-400 text-xl"></i>
             </div>
             
-            <div class="flex justify-center items-center space-x-4 mt-4">
+            <div class="flex flex-wrap justify-center items-center gap-4 mt-4">
                 <button id="aboutButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     About Us
                 </button>
                 <button id="liveLoungeButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Live Lounge
                 </button>
+                <button id="installAppButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200 hidden">
+                    <i class="fas fa-download mr-2"></i>Download App
+                </button>
             </div>
 
         </div>
     </div>
 
-    <div id="aboutModalOverlay">
-        <div id="aboutContent" class="text-left">
-            <button id="closeAboutButton">
+    <div id="aboutModalOverlay" class="modal-overlay">
+        <div id="aboutContent" class="modal-content text-left">
+            <button id="closeAboutButton" class="modal-close-button">
                 <i class="fas fa-times"></i>
             </button>
             <h2 class="text-3xl font-extrabold text-indigo-400 mb-4 text-center">About Radio HLR</h2>
@@ -187,7 +190,7 @@
             </p>
             <div class="flex flex-col items-center mt-4 space-y-2">
                 <a href="https://live365.com/station/Heckington-Living-Community-Radio-a52107" target="_blank" class="text-indigo-400 hover:underline">Visit our Live365 Page</a>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -201,10 +204,55 @@
         const aboutButton = document.getElementById('aboutButton');
         const aboutModalOverlay = document.getElementById('aboutModalOverlay');
         const closeAboutButton = document.getElementById('closeAboutButton');
-        const liveLoungeButton = document.getElementById('liveLoungeButton'); // New: Live Lounge button
+        const liveLoungeButton = document.getElementById('liveLoungeButton');
+        const installAppButton = document.getElementById('installAppButton'); // New: Install App Button
+
+        let deferredPrompt; // To store the beforeinstallprompt event
 
         // Set initial volume
         radioStream.volume = volumeSlider.value;
+
+        // --- PWA Installation Logic ---
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Changed service worker path to be relative './'
+                navigator.serviceWorker.register('./service-worker.js') 
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installAppButton.classList.remove('hidden');
+            console.log('beforeinstallprompt fired!');
+        });
+
+        // Handle the install button click
+        installAppButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the A2HS prompt: ${outcome}`);
+                deferredPrompt = null;
+                installAppButton.classList.add('hidden');
+            }
+        });
+
+        // Listen for the app installed event (e.g., when user accepts A2HS)
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed!');
+            installAppButton.classList.add('hidden');
+        });
+        // --- End PWA Installation Logic ---
+
 
         // Function to add/remove pulse animation
         function togglePulseAnimation(isPlaying) {
@@ -225,7 +273,7 @@
                     .catch(error => {
                         console.error("Error playing audio:", error);
                         console.error("Attempted stream URL:", radioStream.src);
-                        alert("Error playing stream. Please check your internet connection."); // Simple alert
+                        showMessageBox('Error', 'Error playing stream. Please check your internet connection.'); // Replaced alert
                     });
             } else {
                 radioStream.pause(); // Pause the stream
@@ -284,12 +332,32 @@
         radioStream.addEventListener('error', (e) => {
             console.error("Audio Error:", e);
             console.error("Attempted stream URL:", radioStream.src);
-            alert("There was an error loading the radio stream. This might be due to network issues."); // Simple alert
+            showMessageBox('Error', 'There was an error loading the radio stream. This might be due to network issues.'); // Replaced alert
         });
 
         radioStream.addEventListener('loadedmetadata', () => {
             // No status text to update
         });
+
+        // Custom Message Box (re-added)
+        function showMessageBox(title, message) {
+            const messageBox = document.createElement('div');
+            messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+            messageBox.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full text-center border border-gray-700">
+                    <h3 class="text-xl font-bold text-red-400 mb-4">${title}</h3>
+                    <p class="text-gray-300 mb-6">${message}</p>
+                    <button id="closeMessageBox" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md transition-colors duration-200">
+                        OK
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(messageBox);
+
+            document.getElementById('closeMessageBox').addEventListener('click', () => {
+                document.body.removeChild(messageBox);
+            });
+        }
     </script>
 </body>
 </html>
