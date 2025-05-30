@@ -133,7 +133,7 @@
             color: white; /* White text on hover */
         }
 
-        /* New style for the current show highlight */
+        /* Style for the current show highlight in the schedule modal */
         .current-show {
             background-color: #4a5568; /* Slightly lighter dark gray */
             padding: 0.5rem;
@@ -239,7 +239,7 @@
         const scheduleModalOverlay = document.getElementById('scheduleModalOverlay');
         const closeScheduleButton = document.getElementById('closeScheduleButton');
         const scheduleList = document.getElementById('scheduleList');
-        const currentShowTitleElement = document.getElementById('currentShowTitle'); // New element for main screen
+        const currentShowTitleElement = document.getElementById('currentShowTitle');
 
         const volumeDownIcon = document.getElementById('volumeDownIcon');
         const volumeUpIcon = document.getElementById('volumeUpIcon');
@@ -577,13 +577,15 @@
                 let showEndMinute = showEndTimeParts[1];
 
                 // Handle shows that cross midnight (e.g., 23:00 - 00:00)
+                // If end is 00:00, treat as 24:00 for comparison for same day
                 if (showEndHour === 0 && showEndMinute === 0) {
-                    showEndHour = 24; // Treat 00:00 as end of day for comparison
+                    showEndHour = 24;
                 }
 
                 const showStartTimeInMinutes = showStartHour * 60 + showStartMinute;
                 const showEndTimeInMinutes = showEndHour * 60 + showEndMinute;
 
+                // Check if current time falls within the show's duration
                 if (currentTimeInMinutes >= showStartTimeInMinutes && currentTimeInMinutes < showEndTimeInMinutes) {
                     return show.title;
                 }
@@ -599,13 +601,11 @@
         // Function to render the schedule dynamically (for the modal)
         function renderSchedule() {
             scheduleList.innerHTML = ''; // Clear previous schedule
-            const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const now = new Date();
             const currentDayIndex = now.getDay(); 
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
             const currentTimeInMinutes = currentHour * 60 + currentMinute;
-
 
             scheduleData.forEach((daySchedule, index) => {
                 const dayDiv = document.createElement('div');
@@ -623,7 +623,7 @@
 
                     // Handle shows that cross midnight (e.g., 23:00 - 00:00)
                     if (showEndHour === 0 && showEndMinute === 0) {
-                        showEndHour = 24; // Treat 00:00 as end of day for comparison
+                        showEndHour = 24; 
                     }
 
                     const isCurrentDay = (index === currentDayIndex);
@@ -640,6 +640,8 @@
 
                     const showP = document.createElement('p');
                     showP.classList.add('text-gray-300');
+                    // Add a unique ID for easier targeting for current-show class, if needed for direct access
+                    // showP.id = `show-${daySchedule.day}-${show.start.replace(':', '-')}`; 
                     if (isCurrentShow) {
                         showP.classList.add('current-show');
                     }
