@@ -184,7 +184,7 @@
                 <button id="scheduleButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Schedule
                 </button>
-            </div>
+                </div>
 
         </div>
     </div>
@@ -217,13 +217,12 @@
             </button>
             <h2 class="text-3xl font-extrabold text-blue-400 mb-4 text-center">Show Schedule</h2>
             <p class="text-gray-300 text-sm italic text-center mb-4">
-                Times are in 24-hour format (GMT).
+                Times are in 24-hour format (BST).
             </p>
             <div id="scheduleList" class="space-y-4">
                 </div>
         </div>
     </div>
-
 
     <script>
         const radioStream = document.getElementById('radioStream');
@@ -245,6 +244,7 @@
         const volumeUpIcon = document.getElementById('volumeUpIcon');
 
         // Schedule Data (24-hour format)
+        // Array is ordered Monday-Sunday to match common schedule displays
         const scheduleData = [
             { day: 'Monday', shows: [
                 { start: '00:00', end: '07:00', title: 'HLR Through the Night' },
@@ -554,15 +554,33 @@
             });
         }
 
-        // Function to get the current show
+        // Function to get the current show (using BST time)
         function getCurrentShow() {
             const now = new Date();
-            const currentDayIndex = now.getDay(); // 0 for Sunday, 1 for Monday, etc.
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTimeInMinutes = currentHour * 60 + currentMinute;
+            let currentDayIndex = now.getUTCDay(); // 0 for Sunday, 1 for Monday, etc. (GMT)
+            let currentHour = now.getUTCHours();    // GMT hour
+            const currentMinute = now.getUTCMinutes();  // GMT minute
 
-            const currentDaySchedule = scheduleData[currentDayIndex];
+            // Adjust for BST (GMT+1)
+            currentHour += 1;
+
+            // Handle hour overflow (if it goes past midnight BST)
+            if (currentHour >= 24) {
+                currentHour -= 24; // Reset hour to start of day
+                currentDayIndex = (currentDayIndex + 1) % 7; // Advance to next day
+            }
+
+            const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
+
+            // Adjust currentDayIndex to match scheduleData array (Monday=0, Tuesday=1, ..., Sunday=6)
+            // getUTCDay: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
+            // scheduleData: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6
+            // The mapping is: (original_getUTCDay + 6) % 7
+            // Example: If original getUTCDay was 0 (Sunday), (0+6)%7 = 6 (correct for scheduleData's Sunday)
+            // Example: If original getUTCDay was 1 (Monday), (1+6)%7 = 0 (correct for scheduleData's Monday)
+            const scheduleDayIndex = (currentDayIndex + 6) % 7; 
+
+            const currentDaySchedule = scheduleData[scheduleDayIndex];
             if (!currentDaySchedule) {
                 return "No schedule for today.";
             }
@@ -586,7 +604,7 @@
                 const showEndTimeInMinutes = showEndHour * 60 + showEndMinute;
 
                 // Check if current time falls within the show's duration
-                if (currentTimeInMinutes >= showStartTimeInMinutes && currentTimeInMinutes < showEndTimeInMinutes) {
+                if (currentTimeInMinutesBST >= showStartTimeInMinutes && currentTimeInMinutesBST < showEndTimeInMinutes) {
                     return show.title;
                 }
             }
@@ -598,14 +616,26 @@
             currentShowTitleElement.textContent = getCurrentShow();
         }
 
-        // Function to render the schedule dynamically (for the modal)
+        // Function to render the schedule dynamically (for the modal, using BST time)
         function renderSchedule() {
             scheduleList.innerHTML = ''; // Clear previous schedule
             const now = new Date();
-            const currentDayIndex = now.getDay(); 
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTimeInMinutes = currentHour * 60 + currentMinute;
+            let currentDayIndex = now.getUTCDay(); 
+            let currentHour = now.getUTCHours();
+            const currentMinute = now.getUTCMinutes();
+
+            // Adjust for BST (GMT+1)
+            currentHour += 1;
+
+            // Handle hour overflow (if it goes past midnight BST)
+            if (currentHour >= 24) {
+                currentHour -= 24; // Reset hour to start of day
+                currentDayIndex = (currentDayIndex + 1) % 7; // Advance to next day
+            }
+            const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
+
+            // Adjust currentDayIndex to match scheduleData array (Monday=0, Sunday=6)
+            const scheduleDayIndex = (currentDayIndex + 6) % 7;
 
             scheduleData.forEach((daySchedule, index) => {
                 const dayDiv = document.createElement('div');
@@ -626,22 +656,20 @@
                         showEndHour = 24; 
                     }
 
-                    const isCurrentDay = (index === currentDayIndex);
+                    const isCurrentDay = (index === scheduleDayIndex); // Use adjusted day index
                     let isCurrentShow = false;
 
                     if (isCurrentDay) {
                         const showStartTimeInMinutes = showStartHour * 60 + showStartMinute;
                         const showEndTimeInMinutes = showEndHour * 60 + showEndMinute;
 
-                        if (currentTimeInMinutes >= showStartTimeInMinutes && currentTimeInMinutes < showEndTimeInMinutes) {
+                        if (currentTimeInMinutesBST >= showStartTimeInMinutes && currentTimeInMinutesBST < showEndTimeInMinutes) {
                             isCurrentShow = true;
                         }
                     }
 
                     const showP = document.createElement('p');
                     showP.classList.add('text-gray-300');
-                    // Add a unique ID for easier targeting for current-show class, if needed for direct access
-                    // showP.id = `show-${daySchedule.day}-${show.start.replace(':', '-')}`; 
                     if (isCurrentShow) {
                         showP.classList.add('current-show');
                     }
