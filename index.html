@@ -12,7 +12,7 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="RadioHLR" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="manifest" href="/site.webmanifest" /> 
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -184,7 +184,7 @@
                 <button id="scheduleButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Schedule
                 </button>
-                </div>
+            </div>
 
         </div>
     </div>
@@ -196,10 +196,10 @@
             </button>
             <h2 class="text-3xl font-extrabold text-indigo-400 mb-4 text-center">About Radio HLR</h2>
             <p class="text-gray-300 mb-4">
-                Welcome to **Radio HLR**, your dedicated community radio station! We are passionate about bringing you a diverse range of music, local news, engaging discussions, and entertaining shows, all tailored to reflect the vibrant spirit of our community.
+                Welcome to Radio HLR, your dedicated community radio station! We are passionate about bringing you a diverse range of music, local news, engaging discussions and entertaining shows, all tailored to reflect the vibrant spirit of our community.
             </p>
             <p class="text-gray-300 mb-4">
-                Our mission is to connect, inform, and entertain. Whether you're looking for the latest community updates, a great soundtrack to your day, or a platform to share your voice, Radio HLR is here for you. We pride ourselves on being a truly local station, run by volunteers who are committed to making a positive impact.
+                Our mission is to keep us all connected and entertain us. Whether you're looking for the latest community updates or a great soundtrack to your day, Radio HLR is here for you. We pride ourselves on being a truly local station, run by volunteers who are committed to making a positive impact.
             </p>
             <p class="text-gray-300 mb-4">
                 Thank you for tuning in and being a part of the Radio HLR family. Your support helps us continue to grow and serve our listeners.
@@ -491,6 +491,21 @@
             scheduleModalOverlay.classList.remove('active'); // Hide schedule modal
         });
 
+        // Close modals by clicking outside the content
+        aboutModalOverlay.addEventListener('click', (event) => {
+            // Check if the click target is the overlay itself, not its children
+            if (event.target === aboutModalOverlay) {
+                aboutModalOverlay.classList.remove('active');
+            }
+        });
+
+        scheduleModalOverlay.addEventListener('click', (event) => {
+            // Check if the click target is the overlay itself, not its children
+            if (event.target === scheduleModalOverlay) {
+                scheduleModalOverlay.classList.remove('active');
+            }
+        });
+
         // Update animation based on audio events (only for main stream)
         radioStream.addEventListener('playing', () => {
             togglePulseAnimation(true); // Start animation
@@ -557,27 +572,22 @@
         // Function to get the current show (using BST time)
         function getCurrentShow() {
             const now = new Date();
-            let currentDayIndex = now.getUTCDay(); // 0 for Sunday, 1 for Monday, etc. (GMT)
-            let currentHour = now.getUTCHours();    // GMT hour
-            const currentMinute = now.getUTCMinutes();  // GMT minute
+            let currentDayIndex = now.getUTCDay(); 
+            let currentHour = now.getUTCHours();    
+            const currentMinute = now.getUTCMinutes();  
 
             // Adjust for BST (GMT+1)
             currentHour += 1;
 
             // Handle hour overflow (if it goes past midnight BST)
             if (currentHour >= 24) {
-                currentHour -= 24; // Reset hour to start of day
-                currentDayIndex = (currentDayIndex + 1) % 7; // Advance to next day
+                currentHour -= 24; 
+                currentDayIndex = (currentDayIndex + 1) % 7; 
             }
 
             const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
 
-            // Adjust currentDayIndex to match scheduleData array (Monday=0, Tuesday=1, ..., Sunday=6)
-            // getUTCDay: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
-            // scheduleData: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6
-            // The mapping is: (original_getUTCDay + 6) % 7
-            // Example: If original getUTCDay was 0 (Sunday), (0+6)%7 = 6 (correct for scheduleData's Sunday)
-            // Example: If original getUTCDay was 1 (Monday), (1+6)%7 = 0 (correct for scheduleData's Monday)
+            // Adjust currentDayIndex to match scheduleData array (Monday=0, Sunday=6)
             const scheduleDayIndex = (currentDayIndex + 6) % 7; 
 
             const currentDaySchedule = scheduleData[scheduleDayIndex];
@@ -594,8 +604,7 @@
                 let showEndHour = showEndTimeParts[0];
                 let showEndMinute = showEndTimeParts[1];
 
-                // Handle shows that cross midnight (e.g., 23:00 - 00:00)
-                // If end is 00:00, treat as 24:00 for comparison for same day
+                // If end is 00:00, treat as 24:00 for comparison within the same day
                 if (showEndHour === 0 && showEndMinute === 0) {
                     showEndHour = 24;
                 }
@@ -629,13 +638,15 @@
 
             // Handle hour overflow (if it goes past midnight BST)
             if (currentHour >= 24) {
-                currentHour -= 24; // Reset hour to start of day
-                currentDayIndex = (currentDayIndex + 1) % 7; // Advance to next day
+                currentHour -= 24; 
+                currentDayIndex = (currentDayIndex + 1) % 7; 
             }
             const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
 
             // Adjust currentDayIndex to match scheduleData array (Monday=0, Sunday=6)
             const scheduleDayIndex = (currentDayIndex + 6) % 7;
+
+            let currentShowElement = null; // To store the element of the current show
 
             scheduleData.forEach((daySchedule, index) => {
                 const dayDiv = document.createElement('div');
@@ -651,12 +662,12 @@
                     let showEndHour = showEndTimeParts[0];
                     let showEndMinute = showEndTimeParts[1];
 
-                    // Handle shows that cross midnight (e.g., 23:00 - 00:00)
+                    // If end is 00:00, treat as 24:00 for comparison within the same day
                     if (showEndHour === 0 && showEndMinute === 0) {
                         showEndHour = 24; 
                     }
 
-                    const isCurrentDay = (index === scheduleDayIndex); // Use adjusted day index
+                    const isCurrentDay = (index === scheduleDayIndex); 
                     let isCurrentShow = false;
 
                     if (isCurrentDay) {
@@ -672,12 +683,20 @@
                     showP.classList.add('text-gray-300');
                     if (isCurrentShow) {
                         showP.classList.add('current-show');
+                        currentShowElement = showP; // Store the current show element
                     }
                     showP.textContent = `${show.start} – ${show.end} – ${show.title}`;
                     dayDiv.appendChild(showP);
                 });
                 scheduleList.appendChild(dayDiv);
             });
+
+            // Scroll to the current show after rendering, with a slight delay
+            if (currentShowElement) {
+                setTimeout(() => {
+                    currentShowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100); // Small delay to allow modal transition to complete
+            }
         }
 
         // Initial update for main screen and schedule modal (if opened)
