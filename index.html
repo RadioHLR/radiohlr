@@ -7,12 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="RadioHLR" />
-    <link rel="manifest" href="/site.webmanifest" /> 
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -159,7 +154,7 @@
 
             <audio id="radioStream" src="https://das-edge14-live365-dal02.cdnstream.com/a52107" preload="auto"></audio>
             
-            <audio id="introAudio" src="https://radiorhian.github.io/radiofiles/intro.mp3" preload="auto"></audio> 
+            <audio id="introAudio" src="https://radiohlr.github.io/radiofiles/intro.mp3" preload="auto"></audio> 
 
             <div class="flex justify-center items-center space-x-4 mb-6">
                 <button id="liveButton" class="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 w-24 h-24 flex items-center justify-center text-2xl font-bold">
@@ -391,43 +386,50 @@
                 introAudio.load();
                 radioStream.load();
 
+                // Mute radio stream initially so only intro is heard
+                radioStream.muted = true;
+                introAudio.muted = false; // Ensure intro is not muted
+
                 // Reset intro audio to the beginning
                 introAudio.currentTime = 0;
                 
-                // Temporarily stop pulse animation while intro plays
-                togglePulseAnimation(false);
+                // Attempt to play both streams immediately on user interaction
+                const playIntroPromise = introAudio.play();
+                const playRadioPromise = radioStream.play();
 
-                introAudio.play()
+                Promise.allSettled([playIntroPromise, playRadioPromise])
                     .then(() => {
-                        // Intro started successfully, now set up to play main stream when intro ends
-                        introAudio.onended = () => {
-                            radioStream.play()
-                                .then(() => {
-                                    togglePulseAnimation(true); // Start animation when main stream plays
-                                })
-                                .catch(error => {
-                                    console.error("Error playing radio stream after intro:", error);
-                                    showMessageBox('Error', 'Error playing radio stream. Please check your internet connection.');
-                                });
-                            introAudio.onended = null; // Remove the listener after it fires
-                        };
+                        // If intro audio successfully started playing
+                        if (!introAudio.paused && introAudio.currentTime > 0) {
+                            // Set up listener for when intro audio ends
+                            introAudio.onended = () => {
+                                introAudio.muted = true; // Mute intro after it ends
+                                radioStream.muted = false; // Unmute main stream
+                                introAudio.currentTime = 0; // Reset intro for next play
+                                introAudio.onended = null; // Remove listener
+                                togglePulseAnimation(true); // Start pulse when main stream is audible
+                            };
+                        } else {
+                            // If intro audio failed to play (e.g., autoplay policy, network error)
+                            // Ensure main stream is unmuted and playing
+                            radioStream.muted = false;
+                            togglePulseAnimation(true); // Start pulse directly for main stream
+                            console.warn("Intro audio did not play, defaulting to main stream.");
+                        }
                     })
                     .catch(error => {
-                        console.error("Error playing intro audio:", error);
-                        // If intro fails to play, try playing main stream directly within the same user interaction
-                        radioStream.play()
-                            .then(() => {
-                                togglePulseAnimation(true);
-                            })
-                            .catch(err => {
-                                console.error("Error playing radio stream directly after intro failure:", err);
-                                showMessageBox('Error', 'Error playing radio stream. Intro failed and main stream could not start.');
-                            });
+                        // This catch block will only fire if the play() promises themselves reject,
+                        // not necessarily if autoplay policy prevents them.
+                        console.error("Error attempting to play audio streams:", error);
+                        showMessageBox('Error', 'Could not start audio. Please check your internet connection.');
+                        togglePulseAnimation(false);
                     });
             } else {
                 // If main stream is playing, pause it
                 radioStream.pause(); 
-                // Also pause intro audio if it's playing (e.g., if button was clicked during intro)
+                radioStream.currentTime = 0; // Reset main stream
+                
+                // Also pause and reset intro audio if it's playing
                 if (!introAudio.paused) {
                     introAudio.pause();
                     introAudio.currentTime = 0; // Reset intro audio
@@ -440,9 +442,11 @@
         stopButton.addEventListener('click', () => {
             radioStream.pause();
             radioStream.currentTime = 0; // Reset main stream
-            
+            radioStream.muted = false; // Ensure it's not left muted if stopped during intro
+
             introAudio.pause();
             introAudio.currentTime = 0; // Reset intro audio
+            introAudio.muted = false; // Ensure intro is not left muted
 
             togglePulseAnimation(false); // Stop animation
         });
@@ -508,7 +512,10 @@
 
         // Update animation based on audio events (only for main stream)
         radioStream.addEventListener('playing', () => {
-            togglePulseAnimation(true); // Start animation
+            // Only toggle pulse if not muted (i.e., main stream is actually audible)
+            if (!radioStream.muted) { 
+                togglePulseAnimation(true); 
+            }
         });
 
         radioStream.addEventListener('pause', () => {
@@ -538,15 +545,10 @@
         introAudio.addEventListener('error', (e) => {
             console.error("Audio Error (Intro Stream):", e);
             console.error("Attempted intro stream URL:", introAudio.src);
-            // Don't show a full message box for intro error, just try main stream
-            radioStream.play()
-                .then(() => {
-                    togglePulseAnimation(true);
-                })
-                .catch(err => {
-                    console.error("Error playing radio stream directly after intro failure:", err);
-                    showMessageBox('Error', 'Error playing radio stream. Intro failed and main stream could not start.');
-                });
+            // If intro fails, ensure main stream is unmuted and playing if it was attempted
+            radioStream.muted = false; 
+            togglePulseAnimation(true); // Assume main stream will play
+            showMessageBox('Warning', 'Intro audio could not be played. Starting main radio stream directly.');
         });
 
         // Custom Message Box
