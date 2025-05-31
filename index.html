@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -19,6 +18,7 @@
             min-height: 100vh;
             margin: 0;
             overflow: hidden; /* Hide overflow for modal */
+            transition: background-color 0.3s ease; /* Smooth transition for background */
         }
         /* Custom styling for volume slider track and thumb */
         input[type="range"]::-webkit-slider-runnable-track {
@@ -136,13 +136,164 @@
             font-weight: bold;
             color: #a78bfa; /* Purple-ish text for highlight */
         }
+
+        /* --- CAR MODE STYLES --- */
+        body.car-mode {
+            background-color: #000000; /* Pure black background */
+            color: #ffffff; /* White text */
+        }
+
+        body.car-mode .bg-gray-800 {
+            background-color: #111111; /* Very dark gray for main container */
+            border-color: #333333; /* Darker border */
+        }
+
+        body.car-mode .text-indigo-400 {
+            color: #4CAF50; /* Brighter green for main title in car mode */
+        }
+
+        body.car-mode .text-gray-400,
+        body.car-mode .text-gray-300 {
+            color: #ffffff; /* Pure white for general text */
+        }
+
+        body.car-mode .text-indigo-300 {
+            color: #BBDEFB; /* Light blue for current show title */
+        }
+
+        body.car-mode #liveButton {
+            width: 120px; /* Larger button */
+            height: 120px; /* Larger button */
+            font-size: 3rem; /* Larger text */
+            background-color: #4CAF50; /* Green for play */
+        }
+        body.car-mode #liveButton:hover {
+            background-color: #66BB6A; /* Lighter green on hover */
+        }
+
+        body.car-mode #stopButton {
+            width: 90px; /* Larger stop button */
+            height: 90px; /* Larger stop button */
+            font-size: 2.5rem; /* Larger icon */
+            background-color: #F44336; /* Red for stop */
+        }
+        body.car-mode #stopButton:hover {
+            background-color: #EF5350; /* Lighter red on hover */
+        }
+
+        body.car-mode #volumeSlider::-webkit-slider-runnable-track {
+            background: #616161; /* Lighter track */
+        }
+        body.car-mode #volumeSlider::-webkit-slider-thumb {
+            background: #4CAF50; /* Green thumb */
+        }
+        body.car-mode #volumeSlider::-moz-range-track {
+            background: #616161; /* Lighter track */
+        }
+        body.car-mode #volumeSlider::-moz-range-thumb {
+            background: #4CAF50; /* Green thumb */
+        }
+
+        body.car-mode #volumeDownIcon,
+        body.car-mode #volumeUpIcon {
+            font-size: 2.5rem; /* Larger volume icons */
+            color: #ffffff; /* White icons */
+        }
+
+        body.car-mode .modal-content {
+            background-color: #111111; /* Darker modal background */
+            border-color: #333333;
+        }
+
+        body.car-mode .modal-close-button {
+            background-color: #333333; /* Darker close button */
+            color: #ffffff;
+            font-size: 1.5rem;
+        }
+        body.car-mode .modal-close-button:hover {
+            background-color: #F44336; /* Red hover for close */
+        }
+
+        body.car-mode .bg-gray-700,
+        body.car-mode .bg-blue-600 {
+            font-size: 1.1rem; /* Slightly larger text for bottom buttons */
+            padding: 0.75rem 1.5rem; /* Larger padding */
+        }
+        body.car-mode #aboutButton {
+            background-color: #333333; /* Darker gray */
+            color: #ffffff;
+        }
+        body.car-mode #aboutButton:hover {
+            background-color: #555555;
+        }
+        body.car-mode #scheduleButton {
+            background-color: #333333; /* Darker blue */
+            color: #ffffff;
+        }
+        body.car-mode #scheduleButton:hover {
+            background-color: #555555;
+        }
+
+        body.car-mode .current-show {
+            background-color: #222222; /* Darker highlight for current show */
+            color: #4CAF50; /* Green text for highlight */
+        }
+        body.car-mode .text-blue-400 { /* Schedule title color */
+            color: #BBDEFB; /* Light blue */
+        }
+        body.car-mode .text-blue-300 { /* Schedule day titles color */
+            color: #BBDEFB; /* Light blue */
+        }
+
+        /* Make text less distracting for car mode */
+        body.car-mode #mainNowPlaying p {
+            font-size: 1.1rem;
+        }
+        body.car-mode #currentShowTitle {
+            font-size: 1.3rem;
+        }
+
+        /* Styles for the new car mode icon button */
+        #carModeButton {
+            position: absolute; /* Position it absolutely within its parent */
+            top: 1rem; /* Adjust as needed */
+            right: 1rem; /* Adjust as needed */
+            background-color: #4a5568; /* Default background */
+            color: #ffffff; /* Default icon color */
+            padding: 0.75rem; /* Padding for the icon */
+            border-radius: 9999px; /* Fully rounded */
+            font-size: 1.5rem; /* Icon size */
+            line-height: 1;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 50; /* Ensure it's above other elements but below modals */
+        }
+
+        #carModeButton:hover {
+            background-color: #667eea; /* Indigo hover */
+            color: white;
+        }
+
+        body.car-mode #carModeButton {
+            background-color: #4CAF50; /* Green when active in car mode */
+            color: #ffffff;
+        }
+        body.car-mode #carModeButton:hover {
+            background-color: #66BB6A; /* Lighter green on hover in car mode */
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
     <div class="flex flex-col items-center justify-center min-h-screen w-full p-4">
-        <div class="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700 text-white">
+        <div class="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700 relative">
+            <button id="carModeButton">
+                <i class="fas fa-car"></i>
+            </button>
+
             <div class="flex flex-col items-center mb-6">
-                <img src="https://thumbnailer.mixcloud.com/unsafe/136x136/profile/a/9/e/4/9f1c-7204-4beb-bfb9-8e87d68517f6" alt="Radio HLR Logo" class="w-48 h-48 rounded-full mb-4 border-4 border-indigo-500 shadow-lg object-cover">
+                <img src="https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png" alt="Radio HLR Logo" class="w-48 h-48 rounded-full mb-4 border-4 border-indigo-500 shadow-lg object-cover">
                 <h1 class="text-4xl font-extrabold text-indigo-400 mb-2">Radio HLR</h1>
                 <p class="text-gray-400 text-lg">Your Community Radio Station</p>
                 
@@ -234,6 +385,7 @@
         const closeScheduleButton = document.getElementById('closeScheduleButton');
         const scheduleList = document.getElementById('scheduleList');
         const currentShowTitleElement = document.getElementById('currentShowTitle');
+        const carModeButton = document.getElementById('carModeButton');
 
         const volumeDownIcon = document.getElementById('volumeDownIcon');
         const volumeUpIcon = document.getElementById('volumeUpIcon');
@@ -701,11 +853,29 @@
             }
         }
 
-        // Initial update for main screen and schedule modal (if opened)
+        // --- Car Mode Logic ---
+        function toggleCarMode() {
+            document.body.classList.toggle('car-mode');
+            const isCarMode = document.body.classList.contains('car-mode');
+            localStorage.setItem('carMode', isCarMode ? 'enabled' : 'disabled');
+            // No text to change, just visual indication via CSS
+            carModeButton.classList.toggle('bg-purple-600', !isCarMode); // Original color
+            carModeButton.classList.toggle('hover:bg-purple-700', !isCarMode);
+            carModeButton.classList.toggle('bg-gray-700', isCarMode); // Active color
+            carModeButton.classList.toggle('hover:bg-gray-600', isCarMode); // Active hover color
+            carModeButton.classList.toggle('text-white', true); // Ensure text is always white
+        }
+
+        // Initialize Car Mode from localStorage
         document.addEventListener('DOMContentLoaded', () => {
             updateMainNowPlaying();
-            // renderSchedule will be called when the schedule button is clicked
+            const savedCarMode = localStorage.getItem('carMode');
+            if (savedCarMode === 'enabled') {
+                toggleCarMode(); // Directly apply the mode if saved as enabled
+            }
         });
+
+        carModeButton.addEventListener('click', toggleCarMode);
 
         // Update schedule highlight and main "Now Playing" every minute
         setInterval(() => {
