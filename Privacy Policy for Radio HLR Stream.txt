@@ -1,0 +1,67 @@
+Privacy Policy for Radio HLR Streaming App
+This Privacy Policy describes how the Radio HLR Streaming App (the "App") collects, uses, and discloses information when you use our mobile application.
+
+Last Updated: June 4, 2025
+
+1. Introduction
+The Radio HLR Streaming App is designed to provide users with a simple and direct way to listen to Radio HLR's live audio stream and access basic station information. We are committed to protecting your privacy and handling your data with transparency.
+
+2. Information We DO NOT Collect
+Our primary goal is to provide a seamless listening experience without collecting unnecessary personal data.
+The Radio HLR Streaming App DOES NOT directly collect, store, or transmit any personally identifiable information (PII) from its users. This includes, but is not limited to:
+
+Your name
+
+Your email address
+
+Your phone number
+
+Your precise location data
+
+Your device identifiers (beyond what is necessary for the app to function on your device, which is handled by the platform, not us directly)
+
+Any demographic information
+
+Any audio or voice recordings from your device
+
+3. Information We Collect (Non-Personal)
+The App collects very limited, non-personal information solely for the purpose of enhancing your user experience:
+
+App Preferences (Local Storage): The App uses your device's local storage (similar to browser cookies) to remember your "Car Mode" preference. This allows the app to load with your preferred interface setting (standard or car mode) when you reopen it. This information is stored locally on your device and is not transmitted to our servers or any third parties.
+
+Usage Data (Aggregated & Anonymous): Like most applications, basic, aggregated, and anonymized usage data may be collected by the Google Play Store or the underlying operating system (e.g., Android) for crash reporting and general app performance monitoring. This data does not identify you personally and is used to improve the stability and functionality of the App.
+
+4. How We Use Information
+The minimal information collected (app preferences) is used exclusively for the following purposes:
+
+To provide and maintain the App: Ensuring "Car Mode" loads correctly based on your last setting.
+
+To improve the App: Aggregated, anonymous usage data helps us understand general app performance and identify areas for improvement.
+
+5. Third-Party Services
+The Radio HLR Streaming App relies on certain third-party services for its core functionality. Please be aware that these third parties may have their own privacy policies regarding the data they collect.
+
+Audio Streaming: The App streams audio content from an external provider (Live365). Your interaction with the audio stream (e.g., connection to the stream) is subject to the privacy practices of Live365. We encourage you to review their privacy policy for more information.
+
+Live365: [You might want to link to Live365's privacy policy if available, e.g., https://live365.com/privacy-policy/]
+
+Font Awesome & Tailwind CSS: These are client-side libraries used for styling and icons within the App. They do not collect any personal data from users.
+
+6. Data Security
+We are committed to ensuring the security of your information. While our App does not collect PII, we implement reasonable technical and organizational measures to protect the non-personal data stored locally on your device and to ensure the integrity of our services. However, no method of transmission over the Internet or method of electronic storage is 100% secure.
+
+7. Children's Privacy
+The Radio HLR Streaming App is not intended for use by children under the age of 13. We do not knowingly collect personally identifiable information from children under 13. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us, and we will take steps to remove that information from our records.
+
+8. Changes to This Privacy Policy
+We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy within the App or on our website. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted in the App or on this page.
+
+9. Your Rights
+As the App collects no personal information, there is no personal data for us to provide access to, rectify, or delete. Your "Car Mode" preference can be reset by clearing the App's data or uninstalling and reinstalling the App on your device.
+
+10. Contact Us
+If you have any questions or concerns about this Privacy Policy, please contact us:
+
+By Email: HLR_social@outlook.com
+
+By Visiting our Website: https://radiohlr.com/contacts/ 
