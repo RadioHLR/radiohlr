@@ -373,7 +373,7 @@
                     <span id="liveButtonText">LIVE</span>
                 </button>
 
-                <button id="stopButton" class="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75">
+                <button id="stopButton" class="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 w-24 h-24 flex items-center justify-center">
                     <i class="fas fa-stop text-xl"></i>
                 </button>
             </div>
@@ -395,9 +395,6 @@
                 <button id="scheduleButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Schedule
                 </button>
-                <a href="https://www.radiohlr.com" target="_blank" id="websiteButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-globe mr-2"></i>Website
-                </a>
             </div>
 
         </div>
@@ -420,6 +417,7 @@
             </p>
             <div class="flex flex-col items-center mt-4 space-y-2">
                 <a href="https://live365.com/station/Heckington-Living-Community-Radio-a52107" target="_blank" class="text-indigo-400 hover:underline">Visit our Live365 Page</a>
+                <a href="https://www.radiohlr.com" target="_blank" class="text-indigo-400 hover:underline">Visit our Official Website</a>
             </div>
         </div>
     </div>
@@ -600,6 +598,37 @@
             }
         }
 
+        // --- Media Session API Implementation (for media controls/background playback) ---
+        function updateMediaSession() {
+            if ('mediaSession' in navigator) {
+                const currentShow = getCurrentShow();
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentShow,
+                    artist: 'Radio HLR',
+                    album: 'Live Stream',
+                    artwork: [
+                        { src: 'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', sizes: '96x96', type: 'image/png' },
+                        { src: 'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', sizes: '128x128', type: 'image/png' },
+                        { src: 'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', sizes: '192x192', type: 'image/png' },
+                        { src: 'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', sizes: '256x256', type: 'image/png' },
+                        { src: 'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', sizes: '384x384', type: 'image/png' },
+                        { src: 'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', sizes: '512x512', type: 'image/png' },
+                    ]
+                });
+
+                // Set up action handlers for media controls (play/pause from notifications/lock screen)
+                navigator.mediaSession.setActionHandler('play', () => {
+                    radioStream.play();
+                    // Generally, you would not play the intro audio again when resumed from media controls
+                });
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    radioStream.pause();
+                    introAudio.pause(); // Pause intro too if it's still playing
+                });
+                // Additional media session actions like seek or next/previous are not applicable for a live stream
+            }
+        }
+
         // Live Button (Play/Pause Toggle) functionality
         liveButton.addEventListener('click', () => {
             if (radioStream.paused) {
@@ -629,6 +658,7 @@
                                 introAudio.currentTime = 0; // Reset intro for next play
                                 introAudio.onended = null; // Remove listener
                                 togglePulseAnimation(true); // Start pulse when main stream is audible
+                                updateMediaSession(); // Update media session when main stream starts
                             };
                         } else {
                             // If intro audio failed to play (e.g., autoplay policy, network error)
@@ -636,6 +666,7 @@
                             radioStream.muted = false;
                             togglePulseAnimation(true); // Start pulse directly for main stream
                             console.warn("Intro audio did not play, defaulting to main stream.");
+                            updateMediaSession(); // Update media session when main stream starts
                         }
                     })
                     .catch(error => {
@@ -656,6 +687,7 @@
                     introAudio.currentTime = 0; // Reset intro audio
                 }
                 togglePulseAnimation(false); // Stop animation
+                updateMediaSession(); // Update media session on pause
             }
         });
 
@@ -670,6 +702,7 @@
             introAudio.muted = false; // Ensure intro is not left muted
 
             togglePulseAnimation(false); // Stop animation
+            updateMediaSession(); // Update media session on stop
         });
 
         // Volume control from slider
@@ -737,10 +770,12 @@
             if (!radioStream.muted) { 
                 togglePulseAnimation(true); 
             }
+            updateMediaSession(); // Update media session on play
         });
 
         radioStream.addEventListener('pause', () => {
             togglePulseAnimation(false); // Stop animation
+            updateMediaSession(); // Update media session on pause
         });
 
         radioStream.addEventListener('waiting', () => {
@@ -749,6 +784,7 @@
 
         radioStream.addEventListener('ended', () => {
             togglePulseAnimation(false); // Stop animation
+            updateMediaSession(); // Update media session on ended
             // Attempt to reload and replay the main stream if it ends unexpectedly
             setTimeout(() => {
                 radioStream.load(); 
@@ -846,6 +882,7 @@
         // Function to update the "Currently On Air" display on the main screen
         function updateMainNowPlaying() {
             currentShowTitleElement.textContent = getCurrentShow();
+            updateMediaSession(); // Update media session metadata when show changes
         }
 
         // Function to render the schedule dynamically (for the modal, using BST time)
@@ -967,3 +1004,6 @@
     </script>
 </body>
 </html>
+
+
+update:16/06/25
