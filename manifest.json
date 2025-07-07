@@ -1,0 +1,41 @@
+{
+    "name": "Radio HLR",
+    "short_name": "Radio HLR",
+    "description": "Your Community Radio Station - Live Stream and Schedule",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#1a202c",
+    "theme_color": "#667eea",
+    "icons": [
+        {
+            "src": "https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%2075%20x%2075.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%2096%20x%2096.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%20128%20x%20128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%20384%20x%20384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%20512%20x%20512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

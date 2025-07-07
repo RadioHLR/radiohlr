@@ -1,0 +1,94 @@
+// service-worker.js
+
+const CACHE_NAME = 'radio-hlr-cache-v1';
+const urlsToCache = [
+    '/', // Cache the root path
+    '/index.html', // Assuming your main app file is index.html
+    'https://cdn.tailwindcss.com', // Tailwind CSS CDN
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', // Font Awesome CDN
+    'https://das-edge14-live365-dal02.cdnstream.com/a52107', // Radio stream URL (note: live streams might not cache fully)
+    'https://radiohlr.github.io/radiohlr/intro.mp3', // Intro audio
+    'https://radiohlr.com/wp-content/uploads/RADIO_HLR_-logo-update.png', // Logo image (main app logo)
+    // Add all the icon URLs from your manifest.json here for caching
+    'https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%2075%20x%2075.png',
+    'https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%2096%20x%2096.png',
+    'https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%20128%20x%20128.png',
+    'https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%20384%20x%20384.png',
+    'https://raw.githubusercontent.com/RadioHLR/radiohlr/refs/heads/main/logo/hlr%20-%20512%20x%20512.png'
+];
+
+// Install event: Caches all the assets listed in urlsToCache
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('Opened cache');
+                return cache.addAll(urlsToCache);
+            })
+            .catch((error) => {
+                console.error('Failed to cache during install:', error);
+            })
+    );
+});
+
+// Fetch event: Intercepts network requests and serves from cache if available
+self.addEventListener('fetch', (event) => {
+    // Strategy: Network-only for the radio stream to ensure it's always live
+    if (event.request.url.includes('cdnstream.com') || event.request.url.includes('live365.com')) {
+        event.respondWith(fetch(event.request));
+        return; // Important: return after responding
+    }
+
+    // Strategy: Cache-first for other assets (HTML, CSS, JS, images)
+    event.respondWith(
+        caches.match(event.request)
+            .then((response) => {
+                // Cache hit - return response
+                if (response) {
+                    return response;
+                }
+                // No cache hit - fetch from network
+                return fetch(event.request).then(
+                    (response) => {
+                        // Check if we received a valid response
+                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                            return response;
+                        }
+                        // IMPORTANT: Clone the response. A response is a stream
+                        // and can only be consumed once. We consume it once to cache it,
+                        // and once by the browser for the actual request.
+                        const responseToCache = response.clone();
+
+                        caches.open(CACHE_NAME)
+                            .then((cache) => {
+                                cache.put(event.request, responseToCache);
+                            });
+
+                        return response;
+                    }
+                );
+            })
+            .catch(error => {
+                console.error('Fetch failed:', error);
+                // You can return an offline page here if desired when network fails
+                // return caches.match('/offline.html'); // Example offline page
+            })
+    );
+});
+
+// Activate event: Cleans up old caches
+self.addEventListener('activate', (event) => {
+    const cacheWhitelist = [CACHE_NAME];
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        // Delete old caches
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+});
