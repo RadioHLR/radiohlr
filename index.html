@@ -431,7 +431,7 @@
             </button>
             <h2 class="text-3xl font-extrabold text-blue-400 mb-4 text-center">Show Schedule</h2>
             <p class="text-gray-300 text-sm italic text-center mb-4">
-                Times are in 24-hour format (BST).
+                Times are in 24-hour format ().
             </p>
             <div id="scheduleList" class="space-y-4">
                 </div>
@@ -830,23 +830,23 @@
             });
         }
 
-        // Function to get the current show (using BST time)
+        // Function to get the current show (using  time)
         function getCurrentShow() {
             const now = new Date();
             let currentDayIndex = now.getUTCDay(); 
             let currentHour = now.getUTCHours();    
             const currentMinute = now.getUTCMinutes();  
 
-            // Adjust for BST (GMT+1)
+            // Adjust for  (GMT+1)
             currentHour += 0;
 
-            // Handle hour overflow (if it goes past midnight BST)
+            // Handle hour overflow (if it goes past midnight )
             if (currentHour >= 24) {
                 currentHour -= 24; 
                 currentDayIndex = (currentDayIndex + 0) % 7; 
             }
 
-            const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
+            const currentTimeInMinutes = currentHour * 60 + currentMinute;
 
             // Adjust currentDayIndex to match scheduleData array (Monday=0, Sunday=6)
             const scheduleDayIndex = (currentDayIndex + 6) % 7; 
@@ -874,7 +874,7 @@
                 const showEndTimeInMinutes = showEndHour * 60 + showEndMinute;
 
                 // Check if current time falls within the show's duration
-                if (currentTimeInMinutesBST >= showStartTimeInMinutes && currentTimeInMinutesBST < showEndTimeInMinutes) {
+                if (currentTimeInMinutes >= showStartTimeInMinutes && currentTimeInMinutes < showEndTimeInMinutes) {
                     return show.title;
                 }
             }
@@ -887,7 +887,7 @@
             updateMediaSession(); // Update media session metadata when show changes
         }
 
-        // Function to render the schedule dynamically (for the modal, using BST time)
+        // Function to render the schedule dynamically (for the modal, using  time)
         function renderSchedule() {
             scheduleList.innerHTML = ''; // Clear previous schedule
             const now = new Date();
@@ -895,15 +895,15 @@
             let currentHour = now.getUTCHours();
             const currentMinute = now.getUTCMinutes();
 
-            // Adjust for BST (GMT+1)
-            currentHour += 1;
+            // Adjust for GMT (GMT+1)
+            currentHour += 0;
 
-            // Handle hour overflow (if it goes past midnight BST)
+            // Handle hour overflow (if it goes past midnight GMT)
             if (currentHour >= 24) {
                 currentHour -= 24; 
                 currentDayIndex = (currentDayIndex + 1) % 7; 
             }
-            const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
+            const currentTimeInMinutesGMT = currentHour * 60 + currentMinute;
 
             // Adjust currentDayIndex to match scheduleData array (Monday=0, Sunday=6)
             const scheduleDayIndex = (currentDayIndex + 6) % 7;
@@ -936,7 +936,7 @@
                         const showStartTimeInMinutes = showStartHour * 60 + showStartMinute;
                         const showEndTimeInMinutes = showEndHour * 60 + showEndMinute;
 
-                        if (currentTimeInMinutesBST >= showStartTimeInMinutes && currentTimeInMinutesBST < showEndTimeInMinutes) {
+                        if (currentTimeInMinutesGMT >= showStartTimeInMinutes && currentTimeInMinutesGMT < showEndTimeInMinutes) {
                             isCurrentShow = true;
                         }
                     }
@@ -1017,4 +1017,5 @@
     </script>
 </body>
 </html>
+
 
