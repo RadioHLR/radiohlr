@@ -838,12 +838,12 @@
             const currentMinute = now.getUTCMinutes();  
 
             // Adjust for BST (GMT+1)
-            currentHour += 1;
+            currentHour += 0;
 
             // Handle hour overflow (if it goes past midnight BST)
             if (currentHour >= 24) {
                 currentHour -= 24; 
-                currentDayIndex = (currentDayIndex + 1) % 7; 
+                currentDayIndex = (currentDayIndex + 0) % 7; 
             }
 
             const currentTimeInMinutesBST = currentHour * 60 + currentMinute;
@@ -1017,3 +1017,4 @@
     </script>
 </body>
 </html>
+
